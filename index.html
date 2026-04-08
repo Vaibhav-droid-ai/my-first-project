@@ -3,136 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Weather App</title>
+    <title>SkyCast Pro</title>
     <style>
         :root {
-            --sky-top: #0f172a;
-            --sky-mid: #1d4ed8;
-            --sky-bottom: #38bdf8;
-            --panel: rgba(10, 18, 36, 0.56);
-            --panel-soft: rgba(255, 255, 255, 0.1);
-            --panel-line: rgba(255, 255, 255, 0.14);
-            --text: #f8fafc;
-            --muted: rgba(248, 250, 252, 0.72);
-            --accent: #f59e0b;
-            --accent-soft: rgba(245, 158, 11, 0.18);
-            --button-dark: #0f172a;
-            --button-light: #f8fafc;
-            --shadow: rgba(2, 6, 23, 0.34);
+            --bg-top: #06111f;
+            --bg-mid: #12356b;
+            --bg-bottom: #30a8d6;
+            --glass: rgba(9, 18, 36, 0.58);
+            --glass-soft: rgba(255, 255, 255, 0.08);
+            --line: rgba(255, 255, 255, 0.14);
+            --text: #f8fbff;
+            --muted: rgba(248, 251, 255, 0.72);
+            --accent: #ffd166;
+            --accent-soft: rgba(255, 209, 102, 0.2);
+            --shadow: rgba(3, 7, 18, 0.4);
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             min-height: 100vh;
+            overflow-x: hidden;
             font-family: "Segoe UI", Arial, sans-serif;
             color: var(--text);
             background:
-                radial-gradient(circle at top left, rgba(255, 255, 255, 0.16), transparent 30%),
-                radial-gradient(circle at 85% 18%, rgba(245, 158, 11, 0.24), transparent 18%),
-                linear-gradient(160deg, var(--sky-top), var(--sky-mid) 54%, var(--sky-bottom));
+                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.16), transparent 22%),
+                radial-gradient(circle at 85% 10%, rgba(255, 209, 102, 0.18), transparent 16%),
+                radial-gradient(circle at 78% 75%, rgba(56, 189, 248, 0.18), transparent 20%),
+                linear-gradient(160deg, var(--bg-top), var(--bg-mid) 52%, var(--bg-bottom));
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.32;
+            pointer-events: none;
+            animation: floatBlob 14s ease-in-out infinite;
+        }
+
+        body::before {
+            top: 40px;
+            right: -60px;
+            background: rgba(255, 209, 102, 0.42);
+        }
+
+        body::after {
+            bottom: 10px;
+            left: -80px;
+            background: rgba(125, 211, 252, 0.3);
+            animation-delay: -6s;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+            50% { transform: translateY(-24px) translateX(12px) scale(1.04); }
+        }
+
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(22px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         .page {
             min-height: 100vh;
+            padding: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 28px;
         }
 
         .app-shell {
-            width: min(100%, 1080px);
+            width: min(100%, 1180px);
+            border-radius: 34px;
             padding: 28px;
-            border-radius: 30px;
-            border: 1px solid var(--panel-line);
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)),
-                var(--panel);
-            backdrop-filter: blur(18px);
-            box-shadow: 0 24px 80px var(--shadow);
+            border: 1px solid var(--line);
+            background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05)), var(--glass);
+            backdrop-filter: blur(24px);
+            box-shadow: 0 30px 90px var(--shadow);
+            animation: riseIn 0.7s ease;
         }
 
-        .topbar {
+        .header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
             gap: 20px;
-            margin-bottom: 24px;
+            align-items: flex-start;
+            margin-bottom: 22px;
         }
 
-        .brand {
+        .brand-row {
             display: flex;
             align-items: center;
             gap: 14px;
+            margin-bottom: 10px;
         }
 
-        .brand-mark {
-            width: 52px;
-            height: 52px;
+        .logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
             display: grid;
             place-items: center;
-            border-radius: 18px;
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(251, 191, 36, 0.5));
-            color: #0f172a;
-            font-size: 24px;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            font-size: 26px;
+            color: #0b1220;
+            background: linear-gradient(135deg, #ffe082, #f59e0b);
         }
 
         .eyebrow {
             margin: 0 0 6px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
             font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
         }
 
         h1 {
             margin: 0;
-            font-size: clamp(32px, 6vw, 54px);
-            line-height: 0.98;
+            font-size: clamp(36px, 6vw, 62px);
+            line-height: 0.94;
         }
 
         .subcopy {
-            margin-top: 10px;
-            max-width: 560px;
+            margin: 0;
+            max-width: 620px;
             color: var(--muted);
             font-size: 16px;
         }
 
-        .update-card {
-            min-width: 180px;
-            padding: 16px 18px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.09);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+        .summary-pill {
+            min-width: 210px;
+            padding: 18px 20px;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        .update-label {
+        .summary-label {
             display: block;
-            color: var(--muted);
             font-size: 12px;
-            text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 6px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
         }
 
-        .update-value {
+        .summary-value {
             font-size: 22px;
             font-weight: 700;
         }
 
-        .search-panel {
+        .search-form {
             display: grid;
             grid-template-columns: 1fr auto auto;
             gap: 12px;
             padding: 14px;
             border-radius: 24px;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--line);
+            margin-bottom: 18px;
         }
 
         .search-form input {
@@ -140,15 +179,13 @@
             border: none;
             outline: none;
             border-radius: 18px;
-            padding: 16px 18px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 17px 18px;
             color: var(--text);
             font-size: 16px;
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        .search-form input::placeholder {
-            color: rgba(248, 250, 252, 0.6);
-        }
+        .search-form input::placeholder { color: rgba(248, 251, 255, 0.56); }
 
         button {
             border: none;
@@ -156,157 +193,176 @@
             padding: 15px 18px;
             cursor: pointer;
             font-size: 15px;
-            font-weight: 600;
-            transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+            font-weight: 700;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
         }
 
         button:hover {
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(2, 6, 23, 0.18);
         }
 
         .primary-button {
-            background: var(--button-light);
-            color: var(--button-dark);
+            background: linear-gradient(135deg, #ffffff, #dbeafe);
+            color: #0b1220;
         }
 
         .ghost-button {
-            background: rgba(255, 255, 255, 0.1);
             color: var(--text);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .primary-button:hover,
-        .chip:hover {
-            background: #ffffff;
-            color: #020617;
-        }
-
-        .ghost-button:hover {
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--line);
         }
 
         .status {
-            margin: 16px 0 22px;
-            padding: 12px 14px;
-            min-height: 48px;
+            min-height: 52px;
             display: flex;
             align-items: center;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.08);
+            padding: 12px 16px;
+            border-radius: 18px;
             color: var(--muted);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 18px;
         }
 
-        .content-grid {
+        .dashboard {
             display: grid;
-            grid-template-columns: 1.45fr 0.95fr;
+            grid-template-columns: 1.55fr 1fr;
             gap: 18px;
         }
 
-        .hero-card,
-        .details-card,
-        .history-card {
-            border-radius: 26px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.08);
+        .panel {
+            border-radius: 28px;
+            border: 1px solid var(--line);
+            background: var(--glass-soft);
         }
 
-        .hero-card {
+        .hero-panel {
+            position: relative;
+            overflow: hidden;
             padding: 24px;
-            min-height: 420px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background:
-                radial-gradient(circle at top right, rgba(245, 158, 11, 0.22), transparent 24%),
-                rgba(255, 255, 255, 0.08);
+            min-height: 450px;
+            background: radial-gradient(circle at top right, rgba(255, 209, 102, 0.26), transparent 24%), linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
         }
 
         .hero-top {
+            position: relative;
+            z-index: 1;
             display: flex;
             justify-content: space-between;
             gap: 20px;
             align-items: flex-start;
         }
 
-        .location-pill {
+        .location-chip {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 12px;
+            padding: 9px 14px;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.1);
             color: var(--muted);
-            font-size: 14px;
-        }
-
-        .weather-icon {
-            width: 88px;
-            height: 88px;
-            border-radius: 24px;
-            display: grid;
-            place-items: center;
-            background: var(--accent-soft);
-            color: #fbbf24;
-            font-size: 38px;
+            margin-bottom: 18px;
         }
 
         .hero-temp {
-            margin: 18px 0 6px;
-            font-size: clamp(64px, 10vw, 112px);
-            line-height: 0.92;
+            margin: 0 0 8px;
+            font-size: clamp(72px, 11vw, 128px);
+            line-height: 0.9;
             font-weight: 800;
-            letter-spacing: -0.05em;
+            letter-spacing: -0.06em;
         }
 
         .condition {
-            font-size: 21px;
-            font-weight: 600;
-            margin-bottom: 14px;
+            margin: 0 0 16px;
+            font-size: 22px;
+            font-weight: 700;
         }
 
         .hero-meta {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            color: var(--muted);
         }
 
         .meta-chip {
             padding: 10px 14px;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.08);
+            color: var(--muted);
         }
 
-        .quick-stats {
+        .weather-visual {
+            width: 120px;
+            min-height: 140px;
+            text-align: center;
+        }
+
+        .weather-icon {
+            width: 104px;
+            height: 104px;
+            margin: 0 auto 12px;
+            border-radius: 28px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 22px;
+            place-items: center;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 54px;
         }
 
-        .quick-card {
+        .visual-caption {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .metrics-grid {
+            position: relative;
+            z-index: 1;
+            margin-top: 22px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .metric-card,
+        .forecast-card,
+        .hour-card,
+        .detail-row {
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .metric-card {
             padding: 16px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.08);
+            transition: transform 0.18s ease, background 0.18s ease;
         }
 
-        .quick-label {
+        .metric-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-label {
             display: block;
-            color: var(--muted);
             font-size: 12px;
-            margin-bottom: 6px;
+            color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.08em;
+            margin-bottom: 8px;
         }
 
-        .quick-value {
-            font-size: 24px;
+        .metric-value {
+            font-size: 25px;
             font-weight: 700;
         }
 
-        .details-card {
-            padding: 22px;
-        }
+        .side-stack { display: grid; gap: 18px; }
+
+        .details-panel,
+        .astro-panel,
+        .forecast-panel,
+        .hourly-panel,
+        .history-panel { padding: 22px; }
 
         .section-title {
             margin: 0 0 14px;
@@ -314,184 +370,212 @@
             font-weight: 700;
         }
 
-        .details-list {
+        .details-list { display: grid; gap: 12px; }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+        }
+
+        .detail-row span { color: var(--muted); }
+
+        .forecast-panel,
+        .hourly-panel,
+        .history-panel { margin-top: 18px; }
+
+        .forecast-grid {
             display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
         }
 
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            align-items: center;
-            padding: 14px 16px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.06);
+        .forecast-card {
+            padding: 16px;
+            border-radius: 22px;
+            animation: riseIn 0.5s ease;
         }
 
-        .detail-item span {
-            color: var(--muted);
+        .forecast-day { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+        .forecast-icon { font-size: 34px; margin-bottom: 10px; }
+        .forecast-temp { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .forecast-text { color: var(--muted); font-size: 14px; }
+
+        .hourly-strip {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(120px, 1fr));
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
         }
 
-        .detail-item strong {
-            font-size: 16px;
+        .hour-card {
+            min-width: 120px;
+            padding: 14px;
+            border-radius: 20px;
+            text-align: center;
         }
 
-        .history-card {
-            margin-top: 18px;
-            padding: 22px;
-        }
+        .hour-time { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+        .hour-icon { font-size: 28px; margin-bottom: 8px; }
+        .hour-temp { font-size: 20px; font-weight: 700; }
 
-        .chip-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
+        .history-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
         .chip {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--line);
             border-radius: 999px;
             padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
         }
 
-        .empty-state {
-            color: var(--muted);
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.07) 25%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.07) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s linear infinite;
         }
 
-        @media (max-width: 860px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
+        .empty-state { color: var(--muted); }
 
-            .quick-stats {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 980px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .forecast-grid { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 720px) {
-            .page {
-                padding: 16px;
-            }
-
-            .app-shell {
-                padding: 18px;
-                border-radius: 24px;
-            }
-
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .search-panel {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        @media (max-width: 760px) {
+            .page { padding: 14px; }
+            .app-shell { padding: 18px; border-radius: 24px; }
+            .header { flex-direction: column; }
+            .search-form { grid-template-columns: 1fr; }
+            .hero-top { flex-direction: column; }
+            .metrics-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <main class="page">
         <section class="app-shell">
-            <div class="topbar">
+            <div class="header">
                 <div>
-                    <div class="brand">
-                        <div class="brand-mark">S</div>
+                    <div class="brand-row">
+                        <div class="logo">SC</div>
                         <div>
-                            <p class="eyebrow">Live Forecast</p>
-                            <h1>SkyCast</h1>
+                            <p class="eyebrow">Advanced Forecast</p>
+                            <h1>SkyCast Pro</h1>
                         </div>
                     </div>
-                    <p class="subcopy">Search any city to get a cleaner, more modern snapshot of temperature, conditions, wind, humidity, and local time.</p>
+                    <p class="subcopy">Live weather, hourly outlook, 3-day forecast, astronomy, and premium dashboard visuals in one clean static app.</p>
                 </div>
-
-                <div class="update-card">
-                    <span class="update-label">Last Updated</span>
-                    <span id="updated-at" class="update-value">Waiting</span>
+                <div class="summary-pill">
+                    <span class="summary-label">Last Updated</span>
+                    <span id="updated-at" class="summary-value">Waiting</span>
                 </div>
             </div>
 
-            <form id="search-form" class="search-form search-panel">
+            <form id="search-form" class="search-form">
                 <input id="city-input" type="text" placeholder="Search city like Delhi, Mumbai, London..." autocomplete="off">
-                <button class="primary-button" type="submit">Search</button>
+                <button class="primary-button" type="submit">Search Weather</button>
                 <button id="use-location" class="ghost-button" type="button">Use My Location</button>
             </form>
 
             <div id="status" class="status">Search for a city to load weather data.</div>
 
-            <div class="content-grid">
-                <section class="hero-card">
-                    <div>
-                        <div class="hero-top">
-                            <div>
-                                <div id="location-name" class="location-pill">No city selected</div>
-                                <div id="temperature" class="hero-temp">-- C</div>
-                                <div id="condition" class="condition">Condition will appear here.</div>
+            <div class="dashboard">
+                <section class="panel hero-panel">
+                    <div class="hero-top">
+                        <div>
+                            <div id="location-name" class="location-chip">No city selected</div>
+                            <div id="temperature" class="hero-temp">-- C</div>
+                            <p id="condition" class="condition">Condition will appear here.</p>
+                            <div class="hero-meta">
+                                <span id="local-time" class="meta-chip">Local time: --</span>
+                                <span id="feels-like" class="meta-chip">Feels like: --</span>
+                                <span id="rain-chance" class="meta-chip">Rain chance: --</span>
                             </div>
-                            <div id="weather-icon" class="weather-icon">C</div>
                         </div>
-
-                        <div class="hero-meta">
-                            <span id="local-time" class="meta-chip">Local time: --</span>
-                            <span id="feels-like" class="meta-chip">Feels like: --</span>
+                        <div class="weather-visual">
+                            <div id="weather-icon" class="weather-icon">SUN</div>
+                            <div id="visual-caption" class="visual-caption">Live sky snapshot</div>
                         </div>
                     </div>
 
-                    <div class="quick-stats">
-                        <div class="quick-card">
-                            <span class="quick-label">Wind</span>
-                            <span id="wind" class="quick-value">--</span>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-label">Wind</span>
+                            <span id="wind" class="metric-value">--</span>
                         </div>
-                        <div class="quick-card">
-                            <span class="quick-label">Humidity</span>
-                            <span id="humidity" class="quick-value">--</span>
+                        <div class="metric-card">
+                            <span class="metric-label">Humidity</span>
+                            <span id="humidity" class="metric-value">--</span>
                         </div>
-                        <div class="quick-card">
-                            <span class="quick-label">Day / Night</span>
-                            <span id="day-night" class="quick-value">--</span>
+                        <div class="metric-card">
+                            <span class="metric-label">UV Index</span>
+                            <span id="uv-index" class="metric-value">--</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Visibility</span>
+                            <span id="visibility" class="metric-value">--</span>
                         </div>
                     </div>
                 </section>
 
-                <aside class="details-card">
-                    <h2 class="section-title">Weather Details</h2>
-                    <div class="details-list">
-                        <div class="detail-item">
-                            <span>Coordinates</span>
-                            <strong id="coordinates">--</strong>
+                <div class="side-stack">
+                    <aside class="panel details-panel">
+                        <h2 class="section-title">Current Details</h2>
+                        <div class="details-list">
+                            <div class="detail-row"><span>Coordinates</span><strong id="coordinates">--</strong></div>
+                            <div class="detail-row"><span>Current Temperature</span><strong id="current-temp-detail">-- C</strong></div>
+                            <div class="detail-row"><span>Apparent Temperature</span><strong id="feels-like-detail">-- C</strong></div>
+                            <div class="detail-row"><span>Weather Type</span><strong id="condition-detail">--</strong></div>
+                            <div class="detail-row"><span>Pressure</span><strong id="pressure">--</strong></div>
                         </div>
-                        <div class="detail-item">
-                            <span>Current Temperature</span>
-                            <strong id="current-temp-detail">-- C</strong>
+                    </aside>
+
+                    <aside class="panel astro-panel">
+                        <h2 class="section-title">Sun Cycle</h2>
+                        <div class="details-list">
+                            <div class="detail-row"><span>Sunrise</span><strong id="sunrise">--</strong></div>
+                            <div class="detail-row"><span>Sunset</span><strong id="sunset">--</strong></div>
+                            <div class="detail-row"><span>Moon Phase</span><strong id="moon-phase">--</strong></div>
                         </div>
-                        <div class="detail-item">
-                            <span>Apparent Temperature</span>
-                            <strong id="feels-like-detail">-- C</strong>
-                        </div>
-                        <div class="detail-item">
-                            <span>Weather Type</span>
-                            <strong id="condition-detail">--</strong>
-                        </div>
-                    </div>
-                </aside>
+                    </aside>
+                </div>
             </div>
 
-            <section class="history-card">
+            <section class="panel forecast-panel">
+                <h2 class="section-title">3-Day Forecast</h2>
+                <div id="forecast-grid" class="forecast-grid">
+                    <div class="forecast-card skeleton" style="height: 150px;"></div>
+                    <div class="forecast-card skeleton" style="height: 150px;"></div>
+                    <div class="forecast-card skeleton" style="height: 150px;"></div>
+                </div>
+            </section>
+
+            <section class="panel hourly-panel">
+                <h2 class="section-title">Hourly Forecast</h2>
+                <div id="hourly-strip" class="hourly-strip">
+                    <div class="hour-card skeleton" style="height: 118px;"></div>
+                    <div class="hour-card skeleton" style="height: 118px;"></div>
+                    <div class="hour-card skeleton" style="height: 118px;"></div>
+                    <div class="hour-card skeleton" style="height: 118px;"></div>
+                </div>
+            </section>
+
+            <section class="panel history-panel">
                 <h2 class="section-title">Recent Searches</h2>
-                <div id="recent-searches" class="chip-row">
+                <div id="recent-searches" class="history-row">
                     <span class="empty-state">No recent searches yet.</span>
                 </div>
             </section>
         </section>
     </main>
 
+    <script src="./config.js"></script>
     <script src="./weather-app.js"></script>
 </body>
 </html>
