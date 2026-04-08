@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
+    <title>Modern Weather App</title>
     <style>
         :root {
-            --bg-a: #4facfe;
-            --bg-b: #00f2fe;
-            --panel: rgba(9, 20, 40, 0.28);
-            --panel-border: rgba(255, 255, 255, 0.22);
-            --text: #ffffff;
-            --muted: rgba(255, 255, 255, 0.8);
-            --snake: #0f172a;
-            --snake-head: #020617;
-            --food: #f97316;
-            --grid-line: rgba(255, 255, 255, 0.08);
-            --button-bg: #ffffff;
-            --button-text: #000000;
+            --sky-top: #0f172a;
+            --sky-mid: #1d4ed8;
+            --sky-bottom: #38bdf8;
+            --panel: rgba(10, 18, 36, 0.56);
+            --panel-soft: rgba(255, 255, 255, 0.1);
+            --panel-line: rgba(255, 255, 255, 0.14);
+            --text: #f8fafc;
+            --muted: rgba(248, 250, 252, 0.72);
+            --accent: #f59e0b;
+            --accent-soft: rgba(245, 158, 11, 0.18);
+            --button-dark: #0f172a;
+            --button-light: #f8fafc;
+            --shadow: rgba(2, 6, 23, 0.34);
         }
 
         * {
@@ -27,17 +28,12 @@
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(270deg, var(--bg-a), var(--bg-b));
-            background-size: 400% 400%;
-            animation: gradientMove 8s ease infinite;
+            font-family: "Segoe UI", Arial, sans-serif;
             color: var(--text);
-        }
-
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.16), transparent 30%),
+                radial-gradient(circle at 85% 18%, rgba(245, 158, 11, 0.24), transparent 18%),
+                linear-gradient(160deg, var(--sky-top), var(--sky-mid) 54%, var(--sky-bottom));
         }
 
         .page {
@@ -45,247 +41,457 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 28px;
         }
 
-        .game-shell {
-            width: min(100%, 760px);
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 24px;
-            padding: 24px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 18px 50px rgba(15, 23, 42, 0.25);
+        .app-shell {
+            width: min(100%, 1080px);
+            padding: 28px;
+            border-radius: 30px;
+            border: 1px solid var(--panel-line);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)),
+                var(--panel);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 24px 80px var(--shadow);
         }
 
-        .header {
+        .topbar {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(251, 191, 36, 0.5));
+            color: #0f172a;
+            font-size: 24px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .eyebrow {
+            margin: 0 0 6px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 11px;
         }
 
         h1 {
-            margin: 0 0 8px;
-            font-size: clamp(32px, 5vw, 48px);
+            margin: 0;
+            font-size: clamp(32px, 6vw, 54px);
+            line-height: 0.98;
         }
 
-        p {
-            margin: 0;
+        .subcopy {
+            margin-top: 10px;
+            max-width: 560px;
             color: var(--muted);
             font-size: 16px;
         }
 
-        .stats {
+        .update-card {
+            min-width: 180px;
+            padding: 16px 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .update-label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        .update-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .search-panel {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-form input {
+            width: 100%;
+            border: none;
+            outline: none;
+            border-radius: 18px;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .search-form input::placeholder {
+            color: rgba(248, 250, 252, 0.6);
+        }
+
+        button {
+            border: none;
+            border-radius: 18px;
+            padding: 15px 18px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .primary-button {
+            background: var(--button-light);
+            color: var(--button-dark);
+        }
+
+        .ghost-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .primary-button:hover,
+        .chip:hover {
+            background: #ffffff;
+            color: #020617;
+        }
+
+        .ghost-button:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .status {
+            margin: 16px 0 22px;
+            padding: 12px 14px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--muted);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.45fr 0.95fr;
+            gap: 18px;
+        }
+
+        .hero-card,
+        .details-card,
+        .history-card {
+            border-radius: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .hero-card {
+            padding: 24px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background:
+                radial-gradient(circle at top right, rgba(245, 158, 11, 0.22), transparent 24%),
+                rgba(255, 255, 255, 0.08);
+        }
+
+        .hero-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .location-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .weather-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 24px;
+            display: grid;
+            place-items: center;
+            background: var(--accent-soft);
+            color: #fbbf24;
+            font-size: 38px;
+        }
+
+        .hero-temp {
+            margin: 18px 0 6px;
+            font-size: clamp(64px, 10vw, 112px);
+            line-height: 0.92;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+
+        .condition {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .hero-meta {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .stat {
-            min-width: 110px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.12);
-            text-align: left;
-        }
-
-        .stat-label {
-            display: block;
-            font-size: 12px;
             color: var(--muted);
-            margin-bottom: 4px;
+        }
+
+        .meta-chip {
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .quick-card {
+            padding: 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .quick-label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
 
-        .stat-value {
+        .quick-value {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 700;
         }
 
-        .board-wrap {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            max-width: 520px;
-            margin: 0 auto;
+        .details-card {
+            padding: 22px;
         }
 
-        #game-board {
-            width: 100%;
-            height: 100%;
+        .section-title {
+            margin: 0 0 14px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .details-list {
             display: grid;
-            grid-template-columns: repeat(16, 1fr);
-            grid-template-rows: repeat(16, 1fr);
-            gap: 1px;
-            background: var(--grid-line);
-            padding: 1px;
-            border-radius: 18px;
-            overflow: hidden;
-        }
-
-        .cell {
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .cell.snake {
-            background: var(--snake);
-        }
-
-        .cell.head {
-            background: var(--snake-head);
-        }
-
-        .cell.food {
-            background: var(--food);
-        }
-
-        .overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            text-align: center;
-            background: rgba(2, 6, 23, 0.42);
-            border-radius: 18px;
-        }
-
-        .overlay[hidden] {
-            display: none;
-        }
-
-        .overlay-card h2 {
-            margin: 0 0 10px;
-            font-size: 28px;
-        }
-
-        .overlay-card p {
-            margin-bottom: 16px;
-        }
-
-        .controls-row {
-            display: flex;
             gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
         }
 
-        button {
-            padding: 12px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            background: var(--button-bg);
-            color: var(--button-text);
-            transition: 0.2s ease;
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.06);
         }
 
-        button:hover {
-            background: #000000;
-            color: #ffffff;
-        }
-
-        .mobile-controls {
-            display: grid;
-            grid-template-columns: repeat(3, 64px);
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .mobile-controls button {
-            padding: 14px 0;
-            font-size: 20px;
-        }
-
-        .mobile-controls .empty {
-            visibility: hidden;
-        }
-
-        .help {
-            margin-top: 18px;
-            text-align: center;
+        .detail-item span {
             color: var(--muted);
         }
 
-        @media (max-width: 640px) {
-            .game-shell {
+        .detail-item strong {
+            font-size: 16px;
+        }
+
+        .history-card {
+            margin-top: 18px;
+            padding: 22px;
+        }
+
+        .chip-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            padding: 10px 14px;
+        }
+
+        .empty-state {
+            color: var(--muted);
+        }
+
+        @media (max-width: 860px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                padding: 16px;
+            }
+
+            .app-shell {
                 padding: 18px;
+                border-radius: 24px;
             }
 
-            .header {
+            .topbar {
                 flex-direction: column;
+                align-items: flex-start;
             }
 
-            .stats {
-                justify-content: flex-start;
+            .search-panel {
+                grid-template-columns: 1fr;
             }
 
-            .stat {
-                min-width: 0;
-                flex: 1 1 120px;
+            .hero-top {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
 </head>
 <body>
     <main class="page">
-        <section class="game-shell">
-            <div class="header">
+        <section class="app-shell">
+            <div class="topbar">
                 <div>
-                    <h1>Classic Snake</h1>
-                    <p>Use arrow keys or WASD to move. Press space to pause and restart anytime.</p>
-                </div>
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-label">Score</span>
-                        <span id="score" class="stat-value">0</span>
+                    <div class="brand">
+                        <div class="brand-mark">S</div>
+                        <div>
+                            <p class="eyebrow">Live Forecast</p>
+                            <h1>SkyCast</h1>
+                        </div>
                     </div>
-                    <div class="stat">
-                        <span class="stat-label">Status</span>
-                        <span id="status" class="stat-value">Ready</span>
-                    </div>
+                    <p class="subcopy">Search any city to get a cleaner, more modern snapshot of temperature, conditions, wind, humidity, and local time.</p>
                 </div>
-            </div>
 
-            <div class="board-wrap">
-                <div id="game-board" aria-label="Snake game board" role="grid"></div>
-                <div id="overlay" class="overlay">
-                    <div class="overlay-card">
-                        <h2 id="overlay-title">Press Start</h2>
-                        <p id="overlay-message">Eat the food, grow longer, and avoid walls or your own tail.</p>
-                        <button id="overlay-action" type="button" onclick="window.startGame && window.startGame()">Start Game</button>
-                    </div>
+                <div class="update-card">
+                    <span class="update-label">Last Updated</span>
+                    <span id="updated-at" class="update-value">Waiting</span>
                 </div>
             </div>
 
-            <div class="controls-row">
-                <button id="start-button" type="button">Start</button>
-                <button id="pause-button" type="button">Pause</button>
-                <button id="restart-button" type="button">Restart</button>
+            <form id="search-form" class="search-form search-panel">
+                <input id="city-input" type="text" placeholder="Search city like Delhi, Mumbai, London..." autocomplete="off">
+                <button class="primary-button" type="submit">Search</button>
+                <button id="use-location" class="ghost-button" type="button">Use My Location</button>
+            </form>
+
+            <div id="status" class="status">Search for a city to load weather data.</div>
+
+            <div class="content-grid">
+                <section class="hero-card">
+                    <div>
+                        <div class="hero-top">
+                            <div>
+                                <div id="location-name" class="location-pill">No city selected</div>
+                                <div id="temperature" class="hero-temp">-- C</div>
+                                <div id="condition" class="condition">Condition will appear here.</div>
+                            </div>
+                            <div id="weather-icon" class="weather-icon">C</div>
+                        </div>
+
+                        <div class="hero-meta">
+                            <span id="local-time" class="meta-chip">Local time: --</span>
+                            <span id="feels-like" class="meta-chip">Feels like: --</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-stats">
+                        <div class="quick-card">
+                            <span class="quick-label">Wind</span>
+                            <span id="wind" class="quick-value">--</span>
+                        </div>
+                        <div class="quick-card">
+                            <span class="quick-label">Humidity</span>
+                            <span id="humidity" class="quick-value">--</span>
+                        </div>
+                        <div class="quick-card">
+                            <span class="quick-label">Day / Night</span>
+                            <span id="day-night" class="quick-value">--</span>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="details-card">
+                    <h2 class="section-title">Weather Details</h2>
+                    <div class="details-list">
+                        <div class="detail-item">
+                            <span>Coordinates</span>
+                            <strong id="coordinates">--</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>Current Temperature</span>
+                            <strong id="current-temp-detail">-- C</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>Apparent Temperature</span>
+                            <strong id="feels-like-detail">-- C</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>Weather Type</span>
+                            <strong id="condition-detail">--</strong>
+                        </div>
+                    </div>
+                </aside>
             </div>
 
-            <div class="mobile-controls" aria-label="On-screen movement controls">
-                <span class="empty"></span>
-                <button type="button" data-direction="up" aria-label="Move up">U</button>
-                <span class="empty"></span>
-                <button type="button" data-direction="left" aria-label="Move left">L</button>
-                <button type="button" data-direction="down" aria-label="Move down">D</button>
-                <button type="button" data-direction="right" aria-label="Move right">R</button>
-            </div>
-
-            <p class="help">Boundaries are solid. Hitting a wall or your own body ends the game.</p>
+            <section class="history-card">
+                <h2 class="section-title">Recent Searches</h2>
+                <div id="recent-searches" class="chip-row">
+                    <span class="empty-state">No recent searches yet.</span>
+                </div>
+            </section>
         </section>
     </main>
 
-    <script src="./snake-logic.js"></script>
-    <script src="./snake-ui.js"></script>
+    <script src="./weather-app.js"></script>
 </body>
 </html>
