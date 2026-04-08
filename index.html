@@ -1,72 +1,291 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Vaibhav's Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
     <style>
+        :root {
+            --bg-a: #4facfe;
+            --bg-b: #00f2fe;
+            --panel: rgba(9, 20, 40, 0.28);
+            --panel-border: rgba(255, 255, 255, 0.22);
+            --text: #ffffff;
+            --muted: rgba(255, 255, 255, 0.8);
+            --snake: #0f172a;
+            --snake-head: #020617;
+            --food: #f97316;
+            --grid-line: rgba(255, 255, 255, 0.08);
+            --button-bg: #ffffff;
+            --button-text: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: Arial;
-            background: linear-gradient(270deg, #4facfe, #00f2fe);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(270deg, var(--bg-a), var(--bg-b));
             background-size: 400% 400%;
             animation: gradientMove 8s ease infinite;
-            color: white;
-            text-align: center;
+            color: var(--text);
         }
 
         @keyframes gradientMove {
-            0% {background-position: 0% 50%;}
-            50% {background-position: 100% 50%;}
-            100% {background-position: 0% 50%;}
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .game-shell {
+            width: min(100%, 760px);
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 18px 50px rgba(15, 23, 42, 0.25);
+        }
+
+        .header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         h1 {
-            margin-top: 100px;
-            font-size: 50px;
-            animation: fadeIn 2s ease-in-out;
+            margin: 0 0 8px;
+            font-size: clamp(32px, 5vw, 48px);
         }
 
         p {
-            font-size: 20px;
-            animation: fadeIn 3s ease-in-out;
+            margin: 0;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .stat {
+            min-width: 110px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.12);
+            text-align: left;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .board-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        #game-board {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            grid-template-rows: repeat(16, 1fr);
+            gap: 1px;
+            background: var(--grid-line);
+            padding: 1px;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .cell.snake {
+            background: var(--snake);
+        }
+
+        .cell.head {
+            background: var(--snake-head);
+        }
+
+        .cell.food {
+            background: var(--food);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+            background: rgba(2, 6, 23, 0.42);
+            border-radius: 18px;
+        }
+
+        .overlay[hidden] {
+            display: none;
+        }
+
+        .overlay-card h2 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .overlay-card p {
+            margin-bottom: 16px;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         button {
-            padding: 12px 25px;
-            font-size: 18px;
-            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 16px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            background: white;
-            color: black;
-            transition: 0.3s;
+            background: var(--button-bg);
+            color: var(--button-text);
+            transition: 0.2s ease;
         }
 
         button:hover {
-            background: black;
-            color: white;
-            transform: scale(1.1);
+            background: #000000;
+            color: #ffffff;
         }
 
-        @keyframes fadeIn {
-            from {opacity: 0; transform: translateY(20px);}
-            to {opacity: 1; transform: translateY(0);}
+        .mobile-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 64px);
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .mobile-controls button {
+            padding: 14px 0;
+            font-size: 20px;
+        }
+
+        .mobile-controls .empty {
+            visibility: hidden;
+        }
+
+        .help {
+            margin-top: 18px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        @media (max-width: 640px) {
+            .game-shell {
+                padding: 18px;
+            }
+
+            .header {
+                flex-direction: column;
+            }
+
+            .stats {
+                justify-content: flex-start;
+            }
+
+            .stat {
+                min-width: 0;
+                flex: 1 1 120px;
+            }
         }
     </style>
 </head>
-
 <body>
+    <main class="page">
+        <section class="game-shell">
+            <div class="header">
+                <div>
+                    <h1>Classic Snake</h1>
+                    <p>Use arrow keys or WASD to move. Press space to pause and restart anytime.</p>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-label">Score</span>
+                        <span id="score" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Status</span>
+                        <span id="status" class="stat-value">Ready</span>
+                    </div>
+                </div>
+            </div>
 
-<h1>Hello Vaibhav 🚀</h1>
-<p>Ab meri website animated hai 😎🔥</p>
+            <div class="board-wrap">
+                <div id="game-board" aria-label="Snake game board" role="grid"></div>
+                <div id="overlay" class="overlay">
+                    <div class="overlay-card">
+                        <h2 id="overlay-title">Press Start</h2>
+                        <p id="overlay-message">Eat the food, grow longer, and avoid walls or your own tail.</p>
+                        <button id="overlay-action" type="button">Start Game</button>
+                    </div>
+                </div>
+            </div>
 
-<button onclick="showMessage()">Click Me</button>
+            <div class="controls-row">
+                <button id="start-button" type="button">Start</button>
+                <button id="pause-button" type="button">Pause</button>
+                <button id="restart-button" type="button">Restart</button>
+            </div>
 
-<script>
-function showMessage() {
-    alert("Bhai tu developer ban gaya 😳🔥");
-}
-</script>
+            <div class="mobile-controls" aria-label="On-screen movement controls">
+                <span class="empty"></span>
+                <button type="button" data-direction="up" aria-label="Move up">U</button>
+                <span class="empty"></span>
+                <button type="button" data-direction="left" aria-label="Move left">L</button>
+                <button type="button" data-direction="down" aria-label="Move down">D</button>
+                <button type="button" data-direction="right" aria-label="Move right">R</button>
+            </div>
 
+            <p class="help">Boundaries are solid. Hitting a wall or your own body ends the game.</p>
+        </section>
+    </main>
+
+    <script src="./snake-logic.js"></script>
+    <script src="./snake-ui.js"></script>
 </body>
 </html>
