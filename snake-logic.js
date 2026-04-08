@@ -1,15 +1,15 @@
-const GRID_SIZE = 16;
-const INITIAL_DIRECTION = "right";
-const TICK_MS = 140;
+var GRID_SIZE = 16;
+var INITIAL_DIRECTION = "right";
+var TICK_MS = 140;
 
-const DIRECTION_VECTORS = {
+var DIRECTION_VECTORS = {
     up: { x: 0, y: -1 },
     down: { x: 0, y: 1 },
     left: { x: -1, y: 0 },
     right: { x: 1, y: 0 }
 };
 
-const OPPOSITES = {
+var OPPOSITES = {
     up: "down",
     down: "up",
     left: "right",
@@ -24,9 +24,10 @@ function createInitialSnake() {
     ];
 }
 
-function createInitialState(randomFn = Math.random) {
-    const snake = createInitialSnake();
-    const food = placeFood(snake, GRID_SIZE, randomFn);
+function createInitialState(randomFn) {
+    var safeRandom = randomFn || Math.random;
+    var snake = createInitialSnake();
+    var food = placeFood(snake, GRID_SIZE, safeRandom);
 
     return {
         gridSize: GRID_SIZE,
@@ -41,12 +42,31 @@ function createInitialState(randomFn = Math.random) {
     };
 }
 
+function copyState(baseState, overrides) {
+    var nextState = {};
+    var key;
+
+    for (key in baseState) {
+        if (Object.prototype.hasOwnProperty.call(baseState, key)) {
+            nextState[key] = baseState[key];
+        }
+    }
+
+    for (key in overrides) {
+        if (Object.prototype.hasOwnProperty.call(overrides, key)) {
+            nextState[key] = overrides[key];
+        }
+    }
+
+    return nextState;
+}
+
 function changeDirection(state, nextDirection) {
     if (!DIRECTION_VECTORS[nextDirection]) {
         return state;
     }
 
-    const current = state.direction;
+    var current = state.direction;
     if (state.snake.length > 1 && OPPOSITES[current] === nextDirection) {
         return state;
     }
@@ -55,10 +75,9 @@ function changeDirection(state, nextDirection) {
         return state;
     }
 
-    return {
-        ...state,
+    return copyState(state, {
         queuedDirection: nextDirection
-    };
+    });
 }
 
 function setRunning(state, isRunning) {
@@ -66,76 +85,80 @@ function setRunning(state, isRunning) {
         return state;
     }
 
-    return {
-        ...state,
+    return copyState(state, {
         isRunning,
         hasStarted: state.hasStarted || isRunning
-    };
+    });
 }
 
-function restartGame(randomFn = Math.random) {
-    const nextState = createInitialState(randomFn);
-    return {
-        ...nextState,
+function restartGame(randomFn) {
+    var safeRandom = randomFn || Math.random;
+    var nextState = createInitialState(safeRandom);
+    return copyState(nextState, {
         isRunning: true,
         hasStarted: true
-    };
+    });
 }
 
-function stepGame(state, randomFn = Math.random) {
+function stepGame(state, randomFn) {
+    var safeRandom = randomFn || Math.random;
     if (!state.isRunning || state.isGameOver) {
         return state;
     }
 
-    const direction = state.queuedDirection;
-    const head = state.snake[0];
-    const vector = DIRECTION_VECTORS[direction];
-    const nextHead = {
+    var direction = state.queuedDirection;
+    var head = state.snake[0];
+    var vector = DIRECTION_VECTORS[direction];
+    var nextHead = {
         x: head.x + vector.x,
         y: head.y + vector.y
     };
 
-    const willEat = positionsEqual(nextHead, state.food);
-    const bodyToCheck = willEat ? state.snake : state.snake.slice(0, -1);
+    var willEat = positionsEqual(nextHead, state.food);
+    var bodyToCheck = willEat ? state.snake : state.snake.slice(0, -1);
 
-    if (isOutOfBounds(nextHead, state.gridSize) || bodyToCheck.some((segment) => positionsEqual(segment, nextHead))) {
+    if (isOutOfBounds(nextHead, state.gridSize) || bodyToCheck.some(function (segment) { return positionsEqual(segment, nextHead); })) {
         return {
-            ...state,
+            gridSize: state.gridSize,
+            snake: state.snake,
             direction,
+            queuedDirection: state.queuedDirection,
+            food: state.food,
+            score: state.score,
             isRunning: false,
             isGameOver: true,
             hasStarted: true
         };
     }
 
-    const nextSnake = [nextHead, ...state.snake];
-    let nextFood = state.food;
-    let nextScore = state.score;
+    var nextSnake = [nextHead].concat(state.snake);
+    var nextFood = state.food;
+    var nextScore = state.score;
 
     if (willEat) {
         nextScore += 1;
-        nextFood = placeFood(nextSnake, state.gridSize, randomFn);
+        nextFood = placeFood(nextSnake, state.gridSize, safeRandom);
     } else {
         nextSnake.pop();
     }
 
-    return {
-        ...state,
+    return copyState(state, {
         snake: nextSnake,
         direction,
         queuedDirection: direction,
         food: nextFood,
         score: nextScore,
         hasStarted: true
-    };
+    });
 }
 
-function placeFood(snake, gridSize, randomFn = Math.random) {
-    const openCells = [];
+function placeFood(snake, gridSize, randomFn) {
+    var safeRandom = randomFn || Math.random;
+    var openCells = [];
 
-    for (let y = 0; y < gridSize; y += 1) {
-        for (let x = 0; x < gridSize; x += 1) {
-            if (!snake.some((segment) => segment.x === x && segment.y === y)) {
+    for (var y = 0; y < gridSize; y += 1) {
+        for (var x = 0; x < gridSize; x += 1) {
+            if (!snake.some(function (segment) { return segment.x === x && segment.y === y; })) {
                 openCells.push({ x, y });
             }
         }
@@ -145,7 +168,7 @@ function placeFood(snake, gridSize, randomFn = Math.random) {
         return null;
     }
 
-    const index = Math.min(openCells.length - 1, Math.floor(randomFn() * openCells.length));
+    var index = Math.min(openCells.length - 1, Math.floor(safeRandom() * openCells.length));
     return openCells[index];
 }
 
@@ -158,15 +181,15 @@ function isOutOfBounds(position, gridSize) {
 }
 
 window.SnakeLogic = {
-    GRID_SIZE,
-    INITIAL_DIRECTION,
-    TICK_MS,
-    createInitialSnake,
-    createInitialState,
-    changeDirection,
-    setRunning,
-    restartGame,
-    stepGame,
-    placeFood,
-    positionsEqual
+    GRID_SIZE: GRID_SIZE,
+    INITIAL_DIRECTION: INITIAL_DIRECTION,
+    TICK_MS: TICK_MS,
+    createInitialSnake: createInitialSnake,
+    createInitialState: createInitialState,
+    changeDirection: changeDirection,
+    setRunning: setRunning,
+    restartGame: restartGame,
+    stepGame: stepGame,
+    placeFood: placeFood,
+    positionsEqual: positionsEqual
 };

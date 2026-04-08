@@ -1,27 +1,25 @@
-const {
-    GRID_SIZE,
-    TICK_MS,
-    changeDirection,
-    createInitialState,
-    restartGame,
-    setRunning,
-    stepGame
-} = window.SnakeLogic;
+var GRID_SIZE = window.SnakeLogic.GRID_SIZE;
+var TICK_MS = window.SnakeLogic.TICK_MS;
+var changeDirection = window.SnakeLogic.changeDirection;
+var createInitialState = window.SnakeLogic.createInitialState;
+var restartGame = window.SnakeLogic.restartGame;
+var setRunning = window.SnakeLogic.setRunning;
+var stepGame = window.SnakeLogic.stepGame;
 
-const board = document.getElementById("game-board");
-const scoreValue = document.getElementById("score");
-const statusValue = document.getElementById("status");
-const overlay = document.getElementById("overlay");
-const overlayTitle = document.getElementById("overlay-title");
-const overlayMessage = document.getElementById("overlay-message");
-const overlayAction = document.getElementById("overlay-action");
-const startButton = document.getElementById("start-button");
-const pauseButton = document.getElementById("pause-button");
-const restartButton = document.getElementById("restart-button");
-const directionButtons = document.querySelectorAll("[data-direction]");
+var board = document.getElementById("game-board");
+var scoreValue = document.getElementById("score");
+var statusValue = document.getElementById("status");
+var overlay = document.getElementById("overlay");
+var overlayTitle = document.getElementById("overlay-title");
+var overlayMessage = document.getElementById("overlay-message");
+var overlayAction = document.getElementById("overlay-action");
+var startButton = document.getElementById("start-button");
+var pauseButton = document.getElementById("pause-button");
+var restartButton = document.getElementById("restart-button");
+var directionButtons = document.querySelectorAll("[data-direction]");
 
-let state = createInitialState();
-let tickHandle = null;
+var state = createInitialState();
+var tickHandle = null;
 
 buildBoard();
 render();
@@ -30,7 +28,7 @@ document.addEventListener("keydown", handleKeydown);
 startButton.addEventListener("click", startGame);
 pauseButton.addEventListener("click", togglePause);
 restartButton.addEventListener("click", resetGame);
-overlayAction.addEventListener("click", () => {
+overlayAction.addEventListener("click", function () {
     if (state.isGameOver || !state.hasStarted) {
         resetGame();
         return;
@@ -39,17 +37,17 @@ overlayAction.addEventListener("click", () => {
     startGame();
 });
 
-directionButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-        queueDirection(button.dataset.direction);
+for (var buttonIndex = 0; buttonIndex < directionButtons.length; buttonIndex += 1) {
+    directionButtons[buttonIndex].addEventListener("click", function () {
+        queueDirection(this.getAttribute("data-direction"));
     });
-});
+}
 
 function buildBoard() {
-    const fragment = document.createDocumentFragment();
+    var fragment = document.createDocumentFragment();
 
-    for (let index = 0; index < GRID_SIZE * GRID_SIZE; index += 1) {
-        const cell = document.createElement("div");
+    for (var index = 0; index < GRID_SIZE * GRID_SIZE; index += 1) {
+        var cell = document.createElement("div");
         cell.className = "cell";
         fragment.appendChild(cell);
     }
@@ -58,14 +56,14 @@ function buildBoard() {
 }
 
 function render() {
-    const cells = board.children;
+    var cells = board.children;
 
-    for (const cell of cells) {
-        cell.className = "cell";
+    for (var cellIndex = 0; cellIndex < cells.length; cellIndex += 1) {
+        cells[cellIndex].className = "cell";
     }
 
-    state.snake.forEach((segment, index) => {
-        const cell = getCell(segment.x, segment.y);
+    state.snake.forEach(function (segment, index) {
+        var cell = getCell(segment.x, segment.y);
         if (!cell) {
             return;
         }
@@ -77,8 +75,10 @@ function render() {
     });
 
     if (state.food) {
-        const foodCell = getCell(state.food.x, state.food.y);
-        foodCell?.classList.add("food");
+        var foodCell = getCell(state.food.x, state.food.y);
+        if (foodCell) {
+            foodCell.classList.add("food");
+        }
     }
 
     scoreValue.textContent = String(state.score);
@@ -106,7 +106,8 @@ function render() {
 }
 
 function getCell(x, y) {
-    return board.children[(y * GRID_SIZE) + x] ?? null;
+    var targetCell = board.children[(y * GRID_SIZE) + x];
+    return targetCell || null;
 }
 
 function getStatusText() {
@@ -122,7 +123,7 @@ function getStatusText() {
 }
 
 function handleKeydown(event) {
-    const direction = mapKeyToDirection(event.key);
+    var direction = mapKeyToDirection(event.key);
 
     if (direction) {
         event.preventDefault();
@@ -145,7 +146,7 @@ function handleKeydown(event) {
 }
 
 function mapKeyToDirection(key) {
-    const normalized = key.toLowerCase();
+    var normalized = key.toLowerCase();
 
     switch (normalized) {
         case "arrowup":
@@ -202,8 +203,8 @@ function resetGame() {
 
 function startLoop() {
     stopLoop();
-    tickHandle = window.setInterval(() => {
-        const nextState = stepGame(state);
+    tickHandle = window.setInterval(function () {
+        var nextState = stepGame(state);
         state = nextState;
         if (state.isGameOver) {
             stopLoop();
@@ -211,6 +212,8 @@ function startLoop() {
         render();
     }, TICK_MS);
 }
+
+window.startGame = startGame;
 
 function stopLoop() {
     if (tickHandle !== null) {
