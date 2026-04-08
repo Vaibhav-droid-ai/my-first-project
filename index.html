@@ -1,38 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My First Website</title>
+    <title>Vaibhav's Website</title>
     <style>
         body {
-            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin: 0;
             font-family: Arial;
-            text-align: center;
+            background: linear-gradient(270deg, #4facfe, #00f2fe);
+            background-size: 400% 400%;
+            animation: gradientMove 8s ease infinite;
             color: white;
-            margin-top: 100px;
+            text-align: center;
         }
+
+        @keyframes gradientMove {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
         h1 {
+            margin-top: 100px;
             font-size: 50px;
+            animation: fadeIn 2s ease-in-out;
         }
+
         p {
             font-size: 20px;
+            animation: fadeIn 3s ease-in-out;
         }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 18px;
-            background: white;
-            color: black;
+            margin-top: 20px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
+            background: white;
+            color: black;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: black;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
         }
     </style>
 </head>
+
 <body>
 
 <h1>Hello Vaibhav 🚀</h1>
-<p>Mera upgraded project 😎</p>
+<p>Ab meri website animated hai 😎🔥</p>
 
-<button onclick="alert('Welcome Bro 🔥')">Click Me</button>
+<button onclick="showMessage()">Click Me</button>
+
+<script>
+function showMessage() {
+    alert("Bhai tu developer ban gaya 😳🔥");
+}
+</script>
 
 </body>
 </html>
